@@ -14,13 +14,14 @@ def main():
 
     X_train, y_train = build_data(1000)
     X_val, y_val = build_data(100)
-    model.fit(X_train, y_train, epochs=30, batch_size=100, validation_data=(X_val, y_val))
+    model.fit(X_train, y_train, epochs=100, batch_size=100, validation_data=(X_val, y_val))
 
     X_test, y_test = build_data(100)
 
     fig = plot_boundary(model, X_test, y_test)
 
     plt.show()
+
 
 def plot_boundary(model, features_test, labels_test):
     # different x, y than label y! these is feature space
