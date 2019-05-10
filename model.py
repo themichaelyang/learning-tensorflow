@@ -10,23 +10,25 @@ def main():
     print(tf.VERSION)
     print(tf.keras.__version__)
 
-    model = build_model(0.01)
+    model = build_model(0.001)
 
     X_train, y_train = build_data(1000)
     X_val, y_val = build_data(100)
     model.fit(X_train, y_train, epochs=100, batch_size=100, validation_data=(X_val, y_val))
 
-    X_test, y_test = build_data(100)
+    X_test, y_test = build_data(1000)
 
+    print("EVALUATE:")
+    print(model.evaluate(X_test, y_test))
     fig = plot_boundary(model, X_test, y_test)
 
     plt.show()
 
 
-def plot_boundary(model, features_test, labels_test):
+def plot_boundary(model, features_test, labels_test, scale=1):
     # different x, y than label y! these is feature space
     color_map = plt.get_cmap('coolwarm')
-    x_span = np.linspace(0, 10, 100)
+    x_span = np.linspace(0, scale, 100)
     y_span = x_span
 
     grid = np.meshgrid(x_span, y_span)
@@ -44,12 +46,17 @@ def plot_boundary(model, features_test, labels_test):
     return fig
 
 
-def build_data(n=100):
-    features = np.random.random((n, 2)) * 10
+def build_data(n=100, noise=0.15, scale=1):
+    features = np.random.random((n, 2)) * scale
     # labels must be: n x #labels
+
+    category_1 = np.logical_and(features[:,0] + np.random.random((n,)) * noise > .2 * scale,
+                                features[:,1] + np.random.random((n,)) * noise < .5 * scale)
+
+
     labels = np.array([
-            features[:,0] + np.random.random((n,)) * 2 > 5.2,
-            features[:,1] + np.random.random((n,)) * 2 < 7.5
+            category_1,
+            np.logical_not(category_1)
     ]).T
 
     return features, labels
